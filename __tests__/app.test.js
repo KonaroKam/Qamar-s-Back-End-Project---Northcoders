@@ -181,3 +181,25 @@ describe("PATCH /api/reviews/:review_ud", () => {
       });
   });
 });
+
+
+describe("GET /api/users", () => {
+    test("Get request to /api/users responds with array of objects with designated keys and value types", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeInstanceOf(Array);
+          expect(body.length).toBe(4);
+          body.forEach((obj) => {
+            expect(obj).toEqual(
+              expect.objectContaining({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+              })
+            );
+          });
+        });
+    });
+  });
