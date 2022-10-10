@@ -128,7 +128,7 @@ describe("GET /api/users", () => {
   });
 
 describe("PATCH /api/reviews/:review_ud", () => {
-  test("Patch request increments votes property of review and responds with updated review object", () => {
+  test("Patch request increments votes property of review and responds with now updated review object", () => {
     return request(app)
       .patch("/api/reviews/1")
       .send({ inc_votes: 6 })
