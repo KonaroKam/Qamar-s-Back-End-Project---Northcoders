@@ -24,7 +24,7 @@ describe("Error handling Bad Paths", () => {
   });
 });
 
-describe("/api/categories", () => {
+describe("GET /api/categories", () => {
   test("Get request to /api/categories responds with array of objects", () => {
     return request(app)
       .get("/api/categories")
@@ -40,6 +40,70 @@ describe("/api/categories", () => {
             })
           );
         });
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id", () => {
+  test("Get request to path responds with an object with key of review with correct keys and value types", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            review_body: expect.any(String),
+            designer: expect.any(String),
+            review_img_url: expect.any(String),
+            votes: expect.any(Number),
+            category: expect.any(String),
+            owner: expect.any(String),
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+  test("Get request for review_id 1 responds with correct info", () => {
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            review_id: 1,
+            title: "Agricola",
+            review_body: "Farmyard fun!",
+            designer: "Uwe Rosenberg",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            votes: 1,
+            category: "euro game",
+            owner: "mallionaire",
+            created_at: "2021-01-18T10:00:20.514Z",
+          })
+        );
+      });
+  });
+  test("Non-existent review_id responds with 404 error", () => {
+    return request(app)
+      .get("/api/reviews/99999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Resource cannot be found. Check ID you are trying to access before trying again."
+        );
+      });
+  });
+  test("Invalid review_id type in the path responds with 400 error", () => {
+    return request(app)
+      .get("/api/reviews/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+            "Bad request. Reconsider path requirements."
+        );
       });
   });
 });

@@ -6,3 +6,4 @@ exports.fetchCategories = () => {
     return rows;
   });
 };
+
