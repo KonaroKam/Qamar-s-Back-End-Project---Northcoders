@@ -20,7 +20,7 @@ describe("Error handling Bad Paths", () => {
         );
       });
   });
-  test('Another test for bad paths', () => {
+  test("Another test for bad paths", () => {
     return request(app)
       .get("/api/anotherNotRealPath1337")
       .expect(404)
@@ -32,7 +32,7 @@ describe("Error handling Bad Paths", () => {
   });
 });
 
-describe("/api/categories", () => {
+describe("GET /api/categories", () => {
   test("Get request to /api/categories responds with array of objects", () => {
     return request(app)
       .get("/api/categories")
@@ -48,6 +48,31 @@ describe("/api/categories", () => {
             })
           );
         });
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id", () => {
+  test("Get request to path responds with an object with key of review with correct keys and value types", () => {
+    return request(app)
+      .get("/api/categories")
+      .expect(200)
+      .then(({ review }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            slug: expect.any(String),
+            description: expect.any(String),
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            category: expect.any(String),
+            designer: expect.any(String),
+            owner: expect.any(String),
+            review_body: expect.any(String),
+            review_img_url: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          })
+        );
       });
   });
 });
