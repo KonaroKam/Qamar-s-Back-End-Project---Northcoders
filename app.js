@@ -30,7 +30,7 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
   if (err.code && (err.code === "22P02" || err.code.length === 5)) {
     console.log("PSQL ERROR: >>> ", err);
-    res.status(400).send({ msg: "Bad request. Reconsider path." });
+    res.status(400).send({ msg: "Bad request. Reconsider path requirements." });
   } else {
     next(err);
   }

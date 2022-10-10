@@ -86,13 +86,23 @@ describe("GET /api/reviews/:review_id", () => {
         );
       });
   });
-  test("Invalid review_id responds with 404 error", () => {
+  test("Non-existent review_id responds with 404 error", () => {
     return request(app)
       .get("/api/reviews/99999")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe(
           "Resource cannot be found. Check ID you are trying to access before trying again."
+        );
+      });
+  });
+  test("Invalid review_id type in the path responds with 400 error", () => {
+    return request(app)
+      .get("/api/reviews/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+            "Bad request. Reconsider path requirements."
         );
       });
   });
