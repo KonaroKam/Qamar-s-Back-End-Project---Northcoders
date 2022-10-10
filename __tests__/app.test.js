@@ -106,14 +106,35 @@ describe("GET /api/reviews/:review_id", () => {
   });
 });
 
+describe("GET /api/users", () => {
+    test("Get request to /api/users responds with array of objects with designated keys and value types", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeInstanceOf(Array);
+          expect(body.length).toBe(4);
+          body.forEach((obj) => {
+            expect(obj).toEqual(
+              expect.objectContaining({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+              })
+            );
+          });
+        });
+    });
+  });
+
 describe("PATCH /api/reviews/:review_ud", () => {
   test("Patch request increments votes property of review and responds with updated review object", () => {
     return request(app)
       .patch("/api/reviews/1")
       .send({ inc_votes: 6 })
       .expect(200)
-      .then(({ body: { review } }) => {
-        expect(review).toEqual(
+      .then(({ body: { updatedReview } }) => {
+        expect(updatedReview).toEqual(
           expect.objectContaining({
             review_id: 1,
             title: "Agricola",
@@ -134,8 +155,8 @@ describe("PATCH /api/reviews/:review_ud", () => {
       .patch("/api/reviews/1")
       .send({ inc_votes: -5 })
       .expect(200)
-      .then(({ body: { review } }) => {
-        expect(review).toEqual(
+      .then(({ body: { updatedReview } }) => {
+        expect(updatedReview).toEqual(
           expect.objectContaining({
             review_id: 1,
             title: "Agricola",
@@ -151,10 +172,28 @@ describe("PATCH /api/reviews/:review_ud", () => {
         );
       });
   });
-  test("Responds with error msg if request body does not contain the following info { inc_votes: Number }", () => {
+  test("Responds with error msg if request body does not have inc_votes key in the object", () => {
     return request(app)
       .patch("/api/reviews/1")
       .send({ thisisnotvalid: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request body. Reconsider requirements.");
+      });
+  });
+  test("Responds with error msg if request body key inc_votes does not have a Number value", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: "Not a number clearly" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request body. Reconsider requirements.");
+      });
+  });
+  test("Responds with error msg if request body contains anything more than { inc_votes: Number }", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: 5, should_not: "accept this now" })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request body. Reconsider requirements.");
@@ -183,23 +222,3 @@ describe("PATCH /api/reviews/:review_ud", () => {
 });
 
 
-describe("GET /api/users", () => {
-    test("Get request to /api/users responds with array of objects with designated keys and value types", () => {
-      return request(app)
-        .get("/api/users")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toBeInstanceOf(Array);
-          expect(body.length).toBe(4);
-          body.forEach((obj) => {
-            expect(obj).toEqual(
-              expect.objectContaining({
-                username: expect.any(String),
-                name: expect.any(String),
-                avatar_url: expect.any(String)
-              })
-            );
-          });
-        });
-    });
-  });

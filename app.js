@@ -7,7 +7,6 @@ const { getReviewByID , patchReviewByID} = require("./controllers/review_control
 
 const { getUsers } = require("./controllers/users_controllers");
 
-//pre-emptively added this for when the body of the request becomes important
 app.use(express.json());
 
 app.get("/api/categories", getCategories);
