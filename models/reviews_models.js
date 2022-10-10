@@ -2,13 +2,16 @@ const db = require("../db/connection");
 const format = require("pg-format");
 
 exports.fetchReviewByID = (review_id) => {
-  //models stuff
   return db
     .query(`SELECT * FROM reviews WHERE review_id=$1`, [review_id])
     .then(({ rows: [review] }) => {
-      console.log(rows, "<<<<rows");
-      console.log(review, "<<<<review");
-
-      return review;
+      if (review) {
+        return review;
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: "Resource cannot be found. Check ID you are trying to access before trying again.",
+        });
+      }
     });
 };
