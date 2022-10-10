@@ -110,7 +110,7 @@ describe("GET /api/reviews/:review_id", () => {
 
 
 describe("GET /api/users", () => {
-    test("Get request to /api/users responds with array of objects with designated ", () => {
+    test("Get request to /api/users responds with array of objects with designated keys and value types", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
