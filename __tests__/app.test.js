@@ -101,9 +101,83 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/banana")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-            "Bad request. Reconsider path requirements."
+        expect(body.msg).toBe("Bad request. Reconsider path requirements.");
+      });
+  });
+});
+
+describe("PATCH /api/reviews/:review_ud", () => {
+  test("Patch request increments votes property of review and responds with updated review object", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: 6 })
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            review_id: 1,
+            title: "Agricola",
+            review_body: "Farmyard fun!",
+            designer: "Uwe Rosenberg",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            votes: 7,
+            category: "euro game",
+            owner: "mallionaire",
+            created_at: "2021-01-18T10:00:20.514Z",
+          })
         );
+      });
+  });
+  test("Patch request can also decrement the votes property too", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: -5 })
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            review_id: 1,
+            title: "Agricola",
+            review_body: "Farmyard fun!",
+            designer: "Uwe Rosenberg",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            votes: -4,
+            category: "euro game",
+            owner: "mallionaire",
+            created_at: "2021-01-18T10:00:20.514Z",
+          })
+        );
+      });
+  });
+  test("Responds with error msg if request body does not contain the following info { inc_votes: Number }", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ thisisnotvalid: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request body. Reconsider requirements.");
+      });
+  });
+  test("Non-existent review_id responds with 404 error", () => {
+    return request(app)
+      .patch("/api/reviews/99999")
+      .expect(404)
+      .send({ inc_votes: 5 })
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Resource cannot be found. Check ID you are trying to access before trying again."
+        );
+      });
+  });
+  test("Invalid review_id type in the path responds with 400 error", () => {
+    return request(app)
+      .patch("/api/reviews/banana")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request. Reconsider path requirements.");
       });
   });
 });
