@@ -1,4 +1,6 @@
 const { afterAll, beforeEach } = require("@jest/globals");
+//above auto-imports but for reference I include them
+
 const request = require("supertest");
 
 const seed = require("./../db/seeds/seed");
@@ -13,16 +15,6 @@ describe("Error handling Bad Paths", () => {
   test('Should respond with status 404, "bad request" for bad paths ', () => {
     return request(app)
       .get("/api/notARealPath")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe(
-          "Resource cannot be found. Check path you are trying to access before trying again."
-        );
-      });
-  });
-  test('Another test for bad paths', () => {
-    return request(app)
-      .get("/api/anotherNotRealPath1337")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe(
