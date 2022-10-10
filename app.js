@@ -4,13 +4,14 @@ const app = express();
 const { getCategories } = require("./controllers/categories_controllers");
 const {getReviewByID} = require("./controllers/review_controllers")
 
+//pre-emptively added this for when the body of the request becomes important
 app.use(express.json());
 
 app.get("/api/categories", getCategories);
 
 app.get("/api/reviews/:review_id", getReviewByID);
 
-app.all("*", (req, res, next) => {
+app.all("/api/*", (req, res, next) => {
   res
     .status(404)
     .send({
