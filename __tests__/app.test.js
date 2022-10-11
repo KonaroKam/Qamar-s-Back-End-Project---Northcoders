@@ -101,31 +101,69 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/banana")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-            "Bad request. Reconsider path requirements."
+        expect(body.msg).toBe("Bad request. Reconsider path requirements.");
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id NOW NEEDS TO INCLUDE COMMENT COUNT", () => {
+  test("Should now also include a key of comment_count which has a value of a number", () => {
+    return request(app)
+      .get("/api/reviews/3")
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            comment_count: expect.any(Number),
+          })
+        );
+      });
+  });
+  test("Get request for review_id 2 responds with correct comment_count of 3", () => {
+    return request(app)
+      .get("/api/reviews/2")
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            review_id: 2,
+            comment_count: 3,
+          })
+        );
+      });
+  });
+  test("review_id 1 responds with correct comment_count of 0", () => {
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            review_id: 1,
+            comment_count: 0,
+          })
         );
       });
   });
 });
 
-
 describe("GET /api/users", () => {
-    test("Get request to /api/users responds with array of objects with designated keys and value types", () => {
-      return request(app)
-        .get("/api/users")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toBeInstanceOf(Array);
-          expect(body.length).toBe(4);
-          body.forEach((obj) => {
-            expect(obj).toEqual(
-              expect.objectContaining({
-                username: expect.any(String),
-                name: expect.any(String),
-                avatar_url: expect.any(String)
-              })
-            );
-          });
+  test("Get request to /api/users responds with array of objects with designated keys and value types", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toBeInstanceOf(Array);
+        expect(body.length).toBe(4);
+        body.forEach((obj) => {
+          expect(obj).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
         });
-    });
+      });
   });
+});
