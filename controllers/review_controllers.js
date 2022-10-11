@@ -3,12 +3,21 @@ const {
   fetchReviewByID,
   updateReviewByID,
 } = require("../models/reviews_models");
+const {fetchCategoriesBySlug} = require('../models/categories_models')
+
 
 exports.getReviews = (req, res, next) => {
-  QUERY = req.query
-  fetchReviews(QUERY)
-    .then((reviews) => {
-      res.status(200).send({ reviews });
+  const {category} = req.query
+    
+  const promises = [fetchReviews(category)]
+
+  if (category) {
+    promises.push(fetchCategoriesBySlug(category))
+  }
+
+  Promise.all(promises)
+    .then((promisesReturn) => {
+      res.status(200).send({ reviews: promisesReturn[0] });
     })
     .catch((err) => {
       next(err);

@@ -11,14 +11,17 @@ const app = require("../app");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe("GET /api/reviews", () => {
-  test("Get request to path responds with an array of objects, each with correct keys and value types", () => {
+describe.only("GET /api/reviews", () => {
+  test("Responds with an array of objects, each with correct keys and value types, sorted by date descending", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
       .then(({ body }) => {
         expect(body.reviews).toBeInstanceOf(Array);
         expect(body.reviews.length).toBe(13);
+        expect(body.reviews).toBeSortedBy("created_at", {
+          descending: true,
+        });
         body.reviews.forEach((review) => {
           expect(review).toEqual(
             expect.objectContaining({
@@ -40,8 +43,9 @@ describe("GET /api/reviews", () => {
     return request(app)
       .get("/api/reviews?category=dexterity")
       .expect(200)
-      .then(({ body: { review } }) => {
-        expect(review).toEqual(
+      .then(({ body: { reviews } }) => {
+        expect(reviews.length).toBe(1);
+        expect(reviews[0]).toEqual(
           expect.objectContaining({
             review_id: 2,
             title: "Jenga",
@@ -51,29 +55,56 @@ describe("GET /api/reviews", () => {
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
             review_body: "Fiddly fun for all the family",
             category: "dexterity",
-            created_at: new Date(1610964101251),
+            created_at: "2021-01-18T10:01:41.251Z",
             votes: 5,
             comment_count: 3
           })
         );
       });
   });
-  test("Invalid category returns 0 results/empty array", () => {
+  test("Category with no linked reviews returns 0 results/empty array", () => {
     return request(app)
-      .get("/api/reviews/99999")
+      .get("/api/reviews?category=children's games")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews.length).toBe(0);
+      });
+  });
+  test("Non existent category returns error 404", () => {
+    return request(app)
+      .get("/api/reviews?category=notACategory")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe(
-          "Resource cannot be found. Check ID you are trying to access before trying again."
+          "Category not found. Check category you are trying to access before trying again."
         );
       });
   });
-  test("Invalid query column, aka not category, returns error 400", () => {
+  test("Invalid query column, aka not category, gets ignored and returns as if no query", () => {
     return request(app)
       .get("/api/reviews?notavalidcolumn=wrong")
-      .expect(400)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad query. Reconsider path requirements.");
+        expect(body.reviews).toBeInstanceOf(Array);
+        expect(body.reviews.length).toBe(13);
+        expect(body.reviews).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        body.reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              review_body: expect.any(String),
+              designer: expect.any(String),
+              review_img_url: expect.any(String),
+              votes: expect.any(Number),
+              category: expect.any(String),
+              owner: expect.any(String),
+              created_at: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
