@@ -18,7 +18,6 @@ exports.psqlErrorHandler = (err, req, res, next) => {
       .status(400)
       .send({ msg: "Bad data type. Reconsider path requirements." });
   } else if (err.code === "23502") {
-    console.log("PSQL ERROR: >>> ", err);
     res.status(400).send({ msg: "Bad request body. Reconsider requirements." });
   } else if (err.code.length === 5) {
     console.log("PSQL ERROR: >>> ", err);
