@@ -11,73 +11,6 @@ const app = require("../app");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe("GET /api/reviews", () => {
-  test("Get request to path responds with an array of objects, each with correct keys and value types", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.reviews).toBeInstanceOf(Array);
-        expect(body.reviews.length).toBe(13);
-        body.reviews.forEach((review) => {
-          expect(review).toEqual(
-            expect.objectContaining({
-              review_id: expect.any(Number),
-              title: expect.any(String),
-              review_body: expect.any(String),
-              designer: expect.any(String),
-              review_img_url: expect.any(String),
-              votes: expect.any(Number),
-              category: expect.any(String),
-              owner: expect.any(String),
-              created_at: expect.any(String),
-            })
-          );
-        });
-      });
-  });
-  test("Also accepts category query which filters the results", () => {
-    return request(app)
-      .get("/api/reviews?category=dexterity")
-      .expect(200)
-      .then(({ body: { review } }) => {
-        expect(review).toEqual(
-          expect.objectContaining({
-            review_id: 2,
-            title: "Jenga",
-            designer: "Leslie Scott",
-            owner: "philippaclaire9",
-            review_img_url:
-              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-            review_body: "Fiddly fun for all the family",
-            category: "dexterity",
-            created_at: new Date(1610964101251),
-            votes: 5,
-            comment_count: 3
-          })
-        );
-      });
-  });
-  test("Invalid category returns 0 results/empty array", () => {
-    return request(app)
-      .get("/api/reviews/99999")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe(
-          "Resource cannot be found. Check ID you are trying to access before trying again."
-        );
-      });
-  });
-  test("Invalid query column, aka not category, returns error 400", () => {
-    return request(app)
-      .get("/api/reviews?notavalidcolumn=wrong")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad query. Reconsider path requirements.");
-      });
-  });
-});
-
 describe("GET /api/reviews/:review_id", () => {
   test("Get request to path responds with an object with key of review with correct keys and value types", () => {
     return request(app)
@@ -284,6 +217,74 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+});
+
+
+describe("GET /api/reviews", () => {
+  test("Get request to path responds with an array of objects, each with correct keys and value types", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeInstanceOf(Array);
+        expect(body.reviews.length).toBe(13);
+        body.reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              review_body: expect.any(String),
+              designer: expect.any(String),
+              review_img_url: expect.any(String),
+              votes: expect.any(Number),
+              category: expect.any(String),
+              owner: expect.any(String),
+              created_at: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("Also accepts category query which filters the results", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual(
+          expect.objectContaining({
+            review_id: 2,
+            title: "Jenga",
+            designer: "Leslie Scott",
+            owner: "philippaclaire9",
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            review_body: "Fiddly fun for all the family",
+            category: "dexterity",
+            created_at: new Date(1610964101251),
+            votes: 5,
+            comment_count: 3
+          })
+        );
+      });
+  });
+  test("Invalid category returns 0 results/empty array", () => {
+    return request(app)
+      .get("/api/reviews/99999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Resource cannot be found. Check ID you are trying to access before trying again."
+        );
+      });
+  });
+  test("Invalid query column, aka not category, returns error 400", () => {
+    return request(app)
+      .get("/api/reviews?notavalidcolumn=wrong")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad query. Reconsider path requirements.");
       });
   });
 });
