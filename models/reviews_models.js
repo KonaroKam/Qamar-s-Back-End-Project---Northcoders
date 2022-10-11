@@ -15,21 +15,11 @@ exports.fetchReviewByID = (review_id) => {
     });
 };
 
-exports.updateReviewByID = (review_id, updates) => {
+exports.updateReviewByID = (review_id, incrementValue) => {
+  console.log('incrementValue: ', incrementValue);
 
   // Jim suggests reevaluating and using PSQL errors instead and expanding that error block to respond specific errors
   // AND TO Destructure inc_votes in the controller rather than all this updates.inc_votes here
-  if (
-    !updates.inc_votes ||
-    typeof updates.inc_votes !== "number" ||
-    Object.keys(updates).length > 1
-  ) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad request body. Reconsider requirements.",
-    });
-  }
-  const incrementValue = updates.inc_votes;
 
   return db
     .query(
