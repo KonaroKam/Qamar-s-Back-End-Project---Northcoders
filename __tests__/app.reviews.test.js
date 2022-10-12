@@ -213,6 +213,49 @@ describe("GET /api/reviews/:review_id NOW NEEDS TO INCLUDE COMMENT COUNT", () =>
   });
 });
 
+describe.only("GET /api/reviews NOW ACCEPTS SORT_BY AND ORDER QUERIES", () => {
+  test("Should now be sorted by date and descending by default", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("Should accept sort_by: ASC to sort by date ASC", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=ASC")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("created_at", {
+          descending: false,
+        });
+      });
+  });
+  test("Should accept order: review_id to sort by review_id DESC(default)", () => {
+    return request(app)
+      .get("/api/reviews?order=review_id")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("review_id", {
+          descending: true,
+        });
+      });
+  });
+  test("Should accept both order and sort_by at same time", () => {
+    return request(app)
+      .get("/api/reviews?order=review_id&sort_by=ASC")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("title", {
+          descending: false,
+        });
+      });
+  });
+});
+
 describe("PATCH /api/reviews/:review_id", () => {
   test("Patch request increments votes property of review and responds with now updated review object", () => {
     return request(app)
@@ -374,7 +417,7 @@ describe("GET /api/reviews/:review_id/comments", () => {
   });
 });
 
-describe.only("POST /api/reviews/:review_id/comments", () => {
+describe("POST /api/reviews/:review_id/comments", () => {
   test("Responds 201 and with a newly created comment object with all the expected keys", () => {
     return request(app)
       .post("/api/reviews/3/comments")
