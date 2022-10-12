@@ -11,7 +11,7 @@ const app = require("../app");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe.only("GET /api/reviews", () => {
+describe("GET /api/reviews", () => {
   test("Responds with an array of objects, each with correct keys and value types, sorted by date descending", () => {
     return request(app)
       .get("/api/reviews")
@@ -57,17 +57,18 @@ describe.only("GET /api/reviews", () => {
             category: "dexterity",
             created_at: "2021-01-18T10:01:41.251Z",
             votes: 5,
-            comment_count: 3
+            comment_count: 3,
           })
         );
       });
   });
   test("Category with no linked reviews returns 0 results/empty array", () => {
     return request(app)
-      .get("/api/reviews?category=children's games")
+      .get("/api/reviews?category=children's+games")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews.length).toBe(0);
+        expect(reviews).toEqual([]);
       });
   });
   test("Non existent category returns error 404", () => {
@@ -312,6 +313,146 @@ describe("PATCH /api/reviews/:review_id", () => {
     return request(app)
       .patch("/api/reviews/banana")
       .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+});
+
+describe.only("GET /api/reviews/:review_id/comments", () => {
+  test("Responds with an array of comment objects for the given review_id of which each comment should have the following properties AND sorted by created_at", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments.length).toBe(3);
+        expect(body.comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("Review ID with no linked comments returns 0 results/empty array", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(0);
+        expect(comments).toEqual([]);
+      });
+  });
+  test("Non existent ID returns error 404", () => {
+    return request(app)
+      .get("/api/reviews/99999999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Resource cannot be found. Check ID you are trying to access before trying again."
+        );
+      });
+  });
+  test("Invalid ID returns error 400", () => {
+    return request(app)
+      .get("/api/reviews/banana/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+});
+
+describe.only("POST /api/reviews/:review_id/comments", () => {
+  test("Responds 201 and with a newly created comment object with all the expected keys", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send({
+        username: "philippaclaire9",
+        body: "This is a brand new comment for review ID 3",
+      })
+      .expect(201)
+      .then(({ body: newComment }) => {
+        expect(newComment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            votes: 0,
+            created_at: expect.any(String),
+            author: "philippaclaire9",
+            body: "This is a brand new comment for review ID 3",
+            review_id: 3,
+          })
+        );
+      });
+  });
+  test("Non existent ID returns error 404", () => {
+    return request(app)
+      .post("/api/reviews/99999999/comments")
+      .send({
+        username: "philippaclaire9",
+        body: "This is a brand new comment for review ID 3",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Resource cannot be found. Check ID you are trying to access before trying again."
+        );
+      });
+  });
+  test("Invalid ID returns error 400", () => {
+    return request(app)
+      .post("/api/reviews/banana/comments")
+      .send({
+        username: "philippaclaire9",
+        body: "This is a brand new comment for review ID 3",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+  test("Returns 400 when not provided the info it needs to create a new comment i.e. username and body", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send({
+        notUsername: "philippaclaire9",
+        notBody: "This is a brand new comment for review ID 3",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+  test("Returns 400 error when not provided the right data types for the keys it needs to create a new comment i.e. username: string and body:string", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send({
+        username: 1337,
+        body: false,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+  test("Returns 400 error when not provided an existing username", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send({
+        username: "ThisIsNotAnExistingUsername",
+        body: "This is acceptable",
+      })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad data type. Reconsider path requirements.");

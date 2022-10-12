@@ -15,6 +15,8 @@ const {
   getReviews,
   getReviewByID,
   patchReviewByID,
+  getCommentsOfID,
+  postCommentsAtID
 } = require("./controllers/review_controllers");
 
 const { getUsers } = require("./controllers/users_controllers");
@@ -28,6 +30,8 @@ app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id", getReviewByID);
 app.patch("/api/reviews/:review_id", patchReviewByID);
 //I AM ABOUT TO ADD STUFF AND MERGE IN A BIZ SO THIS SHOULD STAY LIKE THIS
+app.get("/api/reviews/:review_id/comments", getCommentsOfID);
+app.post("/api/reviews/:review_id/comments", postCommentsAtID);
 
 app.get("/api/users", getUsers);
 
