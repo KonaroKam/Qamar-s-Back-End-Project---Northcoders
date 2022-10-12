@@ -6,7 +6,7 @@ const {
 } = require("../models/reviews_models");
 const {fetchCategoriesBySlug} = require('../models/categories_models')
 
-
+//THIS COMMENT IS JUST TO ADD A CHANGE SO IT LETS ME PUSH
 exports.getReviews = (req, res, next) => {
   const {category} = req.query
     
