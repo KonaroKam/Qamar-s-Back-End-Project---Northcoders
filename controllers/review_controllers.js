@@ -2,11 +2,11 @@ const {
   fetchReviews,
   fetchReviewByID,
   updateReviewByID,
-  fetchCommentsOfID
+  fetchCommentsOfID,
+  addCommentsAtID
 } = require("../models/reviews_models");
 const {fetchCategoriesBySlug} = require('../models/categories_models')
 
-//THIS COMMENT IS JUST TO ADD A CHANGE SO IT LETS ME PUSH
 exports.getReviews = (req, res, next) => {
   const {category} = req.query
     
@@ -61,3 +61,16 @@ exports.patchReviewByID = (req, res, next) => {
       next(err);
     });
 };
+
+exports.postCommentsAtID = (req,res,next) => {
+  const { review_id } = req.params;
+  
+  const body = req.body;
+
+  addCommentsAtID(review_id, body).then((newComment) => {
+    res.status(201).send( newComment);
+  })
+  .catch((err) => {
+    next(err);
+  });
+}

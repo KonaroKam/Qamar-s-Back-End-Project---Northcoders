@@ -57,7 +57,7 @@ describe("GET /api/reviews", () => {
             category: "dexterity",
             created_at: "2021-01-18T10:01:41.251Z",
             votes: 5,
-            comment_count: 3
+            comment_count: 3,
           })
         );
       });
@@ -320,7 +320,7 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
-describe.only("GET /api/reviews/:review_id/comments", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
   test("Responds with an array of comment objects for the given review_id of which each comment should have the following properties AND sorted by created_at", () => {
     return request(app)
       .get("/api/reviews/3/comments")
@@ -369,9 +369,93 @@ describe.only("GET /api/reviews/:review_id/comments", () => {
       .get("/api/reviews/banana/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-          "Bad data type. Reconsider path requirements."
+        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+});
+
+describe.only("POST /api/reviews/:review_id/comments", () => {
+  test("Responds 201 and with a newly created comment object with all the expected keys", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send({
+        username: "philippaclaire9",
+        body: "This is a brand new comment for review ID 3",
+      })
+      .expect(201)
+      .then(({ body: newComment }) => {
+        expect(newComment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            votes: 0,
+            created_at: expect.any(String),
+            author: "philippaclaire9",
+            body: "This is a brand new comment for review ID 3",
+            review_id: 3,
+          })
         );
+      });
+  });
+  test("Non existent ID returns error 404", () => {
+    return request(app)
+      .post("/api/reviews/99999999/comments")
+      .send({
+        username: "philippaclaire9",
+        body: "This is a brand new comment for review ID 3",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Bad post request. Reconsider provided body."
+        );
+      });
+  });
+  test("Invalid ID returns error 400", () => {
+    return request(app)
+      .post("/api/reviews/banana/comments")
+      .send({
+        username: "philippaclaire9",
+        body: "This is a brand new comment for review ID 3",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+  test("Returns 400 when not provided the info it needs to create a new comment i.e. username and body", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send({
+        notUsername: "philippaclaire9",
+        notBody: "This is a brand new comment for review ID 3",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request body. Reconsider requirements.");
+      });
+  });
+  test("Returns 400 error when not provided the right data types for the keys it needs to create a new comment i.e. username: string and body:string", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send({
+        username: 1337,
+        body: false,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad post request. Reconsider provided body.");
+      });
+  });
+  test("Returns 404 error when not provided an existing username", () => {
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send({
+        username: "ThisIsNotAnExistingUsername",
+        body: "This is acceptable",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad post request. Reconsider provided body.");
       });
   });
 });

@@ -15,7 +15,8 @@ const {
   getReviews,
   getReviewByID,
   patchReviewByID,
-  getCommentsOfID
+  getCommentsOfID,
+  postCommentsAtID
 } = require("./controllers/review_controllers");
 
 const { getUsers } = require("./controllers/users_controllers");
@@ -28,7 +29,9 @@ app.get("/api/reviews", getReviews);
 
 app.get("/api/reviews/:review_id", getReviewByID);
 app.patch("/api/reviews/:review_id", patchReviewByID);
+
 app.get("/api/reviews/:review_id/comments", getCommentsOfID);
+app.post("/api/reviews/:review_id/comments", postCommentsAtID);
 
 app.get("/api/users", getUsers);
 
