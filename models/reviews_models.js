@@ -1,4 +1,6 @@
 const db = require("../db/connection");
+const format = require("pg-format");
+
 
 exports.fetchReviews = (category) => {
   const paramsArray = [];
@@ -69,6 +71,21 @@ exports.updateReviewByID = (review_id, incrementValue) => {
     });
 };
 
-exports.addCommentsAtID = (review_id, body) => {
-  //stuff
+exports.addCommentsAtID = (review_id, {username, body}) => {
+  return db
+    .query(format(
+      `INSERT INTO comments (review_id, author, body) VALUES %L RETURNING *;`,
+      [[review_id, username, body]])
+    )
+    .then(({ rows: [newComment] }) => {
+      console.log('rows>>>> ', newComment);
+      if (newComment) {
+        return newComment;
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: "Resource cannot be found. Check ID you are trying to access before trying again.",
+        });
+      }
+    });
 }

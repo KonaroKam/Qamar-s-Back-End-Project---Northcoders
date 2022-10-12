@@ -320,7 +320,7 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
-describe.only("GET /api/reviews/:review_id/comments", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
   test("Responds with an array of comment objects for the given review_id of which each comment should have the following properties AND sorted by created_at", () => {
     return request(app)
       .get("/api/reviews/3/comments")
@@ -406,7 +406,7 @@ describe.only("POST /api/reviews/:review_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe(
-          "Resource cannot be found. Check ID you are trying to access before trying again."
+          "Bad post request. Reconsider provided body."
         );
       });
   });
@@ -431,7 +431,7 @@ describe.only("POST /api/reviews/:review_id/comments", () => {
       })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+        expect(body.msg).toBe("Bad request body. Reconsider requirements.");
       });
   });
   test("Returns 400 error when not provided the right data types for the keys it needs to create a new comment i.e. username: string and body:string", () => {
@@ -441,21 +441,21 @@ describe.only("POST /api/reviews/:review_id/comments", () => {
         username: 1337,
         body: false,
       })
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+        expect(body.msg).toBe("Bad post request. Reconsider provided body.");
       });
   });
-  test("Returns 400 error when not provided an existing username", () => {
+  test("Returns 404 error when not provided an existing username", () => {
     return request(app)
       .post("/api/reviews/3/comments")
       .send({
         username: "ThisIsNotAnExistingUsername",
         body: "This is acceptable",
       })
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+        expect(body.msg).toBe("Bad post request. Reconsider provided body.");
       });
   });
 });

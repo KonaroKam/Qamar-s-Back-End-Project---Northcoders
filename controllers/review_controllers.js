@@ -64,10 +64,11 @@ exports.patchReviewByID = (req, res, next) => {
 
 exports.postCommentsAtID = (req,res,next) => {
   const { review_id } = req.params;
+  
   const body = req.body;
 
   addCommentsAtID(review_id, body).then((newComment) => {
-    res.status(201).send({ newComment });
+    res.status(201).send( newComment);
   })
   .catch((err) => {
     next(err);
