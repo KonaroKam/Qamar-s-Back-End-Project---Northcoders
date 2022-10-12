@@ -364,5 +364,14 @@ describe.only("GET /api/reviews/:review_id/comments", () => {
         );
       });
   });
-  
+  test("Invalid ID returns error 400", () => {
+    return request(app)
+      .get("/api/reviews/banana/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Bad data type. Reconsider path requirements."
+        );
+      });
+  });
 });
