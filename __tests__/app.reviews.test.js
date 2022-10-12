@@ -11,7 +11,7 @@ const app = require("../app");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-describe.only("GET /api/reviews", () => {
+describe("GET /api/reviews", () => {
   test("Responds with an array of objects, each with correct keys and value types, sorted by date descending", () => {
     return request(app)
       .get("/api/reviews")
@@ -64,10 +64,11 @@ describe.only("GET /api/reviews", () => {
   });
   test("Category with no linked reviews returns 0 results/empty array", () => {
     return request(app)
-      .get("/api/reviews?category=children's games")
+      .get("/api/reviews?category=children's+games")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews.length).toBe(0);
+        expect(reviews).toEqual([]);
       });
   });
   test("Non existent category returns error 404", () => {
@@ -315,6 +316,62 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
+      });
+  });
+});
+
+describe.only("GET /api/reviews/:review_id/comments", () => {
+  test("Responds with an array of comment objects for the given review_id of which each comment should have the following properties AND sorted by created_at", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments.length).toBe(3);
+        expect(body.comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("Review ID with no linked comments returns 0 results/empty array", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(0);
+        expect(comments).toEqual([]);
+      });
+  });
+  test("Non existent ID returns error 404", () => {
+    return request(app)
+      .get("/api/reviews/99999999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Resource cannot be found. Check ID you are trying to access before trying again."
+        );
+      });
+  });
+  test("Invalid ID returns error 400", () => {
+    return request(app)
+      .get("/api/reviews/banana/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Bad data type. Reconsider path requirements."
+        );
       });
   });
 });

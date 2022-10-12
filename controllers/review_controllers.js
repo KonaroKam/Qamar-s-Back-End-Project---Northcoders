@@ -2,10 +2,11 @@ const {
   fetchReviews,
   fetchReviewByID,
   updateReviewByID,
+  fetchCommentsOfID
 } = require("../models/reviews_models");
 const {fetchCategoriesBySlug} = require('../models/categories_models')
 
-
+//THIS COMMENT IS JUST TO ADD A CHANGE SO IT LETS ME PUSH
 exports.getReviews = (req, res, next) => {
   const {category} = req.query
     
@@ -23,6 +24,20 @@ exports.getReviews = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getCommentsOfID = (req,res,next) =>{
+  const { review_id } = req.params;
+
+  const promises = [fetchCommentsOfID(review_id), fetchReviewByID(review_id)]
+
+  Promise.all(promises)
+    .then((promisesReturn) => {
+      res.status(200).send({ comments: promisesReturn[0] });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
 
 exports.getReviewByID = (req, res, next) => {
   const { review_id } = req.params;
