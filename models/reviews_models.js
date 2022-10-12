@@ -78,7 +78,6 @@ exports.addCommentsAtID = (review_id, {username, body}) => {
       [[review_id, username, body]])
     )
     .then(({ rows: [newComment] }) => {
-      console.log('rows>>>> ', newComment);
       if (newComment) {
         return newComment;
       } else {
