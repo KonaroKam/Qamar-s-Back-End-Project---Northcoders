@@ -18,7 +18,7 @@ describe("Error handling Bad Paths", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe(
-          "Resource cannot be found. Check path you are trying to access before trying again."
+          "Path cannot be found. Check path you are trying to access before trying again."
         );
       });
   });
@@ -61,6 +61,24 @@ describe("GET /api/users", () => {
             })
           );
         });
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE request to valid ID responds with 204", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+  });
+  test("should return 404 if a non-existent ID to delete", () => {
+    return request(app).delete(`/api/comments/1084239843`).expect(404).then(({ body }) => {
+        expect(body.msg).toBe("ID not found. RE-submit request with a valid ID");
+      });
+  });
+  test("should return 400 if an invalid ID to delete", () => {
+    return request(app).delete(`/api/comments/bananas`).expect(400).then(({ body }) => {
+        expect(body.msg).toBe("Bad data type. Reconsider path requirements.");
       });
   });
 });

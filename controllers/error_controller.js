@@ -1,6 +1,6 @@
 exports.badPathErrorHandler = (req, res, next) => {
   res.status(404).send({
-    msg: "Resource cannot be found. Check path you are trying to access before trying again.",
+    msg: "Path cannot be found. Check path you are trying to access before trying again.",
   });
 };
 
