@@ -21,7 +21,7 @@ exports.psqlErrorHandler = (err, req, res, next) => {
     res.status(400).send({ msg: "Bad request body. Reconsider requirements." });
   } else if(err.code === "23503") {
     res.status(404).send({ msg: "Bad post request. Reconsider provided body." });
-  } else if (err.code.length === 5) {
+  } else if (err.code && err.code.length === 5) {
     console.log("PSQL ERROR: >>> ", err);
     res.status(400).send({ msg: "Bad PSQL ERROR. See console." });
   } else {
