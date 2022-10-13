@@ -1,8 +1,7 @@
 const app = require("./app");
 
-// Alternate way of doing it where you can just put PORT as first argument for the app.listen below
-// const { PORT = 9090 } = process.env;
+// Alternate way of doing it could be to replace PORT in app.listen with the the following: process.env.PORT || 9090
 
-app.listen(process.env.PORT || 9090, () =>
-	console.log(`Listening on ${PORT}...`)
-);
+const { PORT = 9090 } = process.env;
+
+app.listen(PORT, () => console.log(`Listening on ${PORT}...`));
