@@ -41,11 +41,11 @@ describe("GET /api/categories", () => {
 		return request(app)
 			.get("/api/categories")
 			.expect(200)
-			.then(({ body }) => {
-				expect(body).toBeInstanceOf(Array);
-				expect(body.length).toBe(4);
-				body.forEach((obj) => {
-					expect(obj).toEqual(
+			.then(({ body: {categories} }) => {
+				expect(categories).toBeInstanceOf(Array);
+				expect(categories.length).toBe(4);
+				categories.forEach((category) => {
+					expect(category).toEqual(
 						expect.objectContaining({
 							slug: expect.any(String),
 							description: expect.any(String),
@@ -61,11 +61,11 @@ describe("GET /api/users", () => {
 		return request(app)
 			.get("/api/users")
 			.expect(200)
-			.then(({ body }) => {
-				expect(body).toBeInstanceOf(Array);
-				expect(body.length).toBe(4);
-				body.forEach((obj) => {
-					expect(obj).toEqual(
+			.then(({ body: {users} }) => {
+				expect(users).toBeInstanceOf(Array);
+				expect(users.length).toBe(4);
+				users.forEach((user) => {
+					expect(user).toEqual(
 						expect.objectContaining({
 							username: expect.any(String),
 							name: expect.any(String),
