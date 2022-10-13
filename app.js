@@ -1,4 +1,3 @@
-const e = require("express");
 const express = require("express");
 const app = express();
 
@@ -16,10 +15,12 @@ const {
   getReviewByID,
   patchReviewByID,
   getCommentsOfID,
-  postCommentsAtID
+  postCommentsAtID,
 } = require("./controllers/review_controllers");
 
 const { getUsers } = require("./controllers/users_controllers");
+
+const { deleteCommentByID } = require("./controllers/comments_controller");
 
 app.use(express.json());
 
@@ -34,6 +35,8 @@ app.get("/api/reviews/:review_id/comments", getCommentsOfID);
 app.post("/api/reviews/:review_id/comments", postCommentsAtID);
 
 app.get("/api/users", getUsers);
+
+app.delete("/api/comments/:comment_id", deleteCommentByID);
 
 app.all("/api/*", badPathErrorHandler);
 
