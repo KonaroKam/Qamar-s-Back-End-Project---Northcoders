@@ -14,7 +14,6 @@ afterAll(() => db.end());
 describe("GET /api for guide of api paths", () => {
 	test("Should respond with an object with title endpoints_guide that includes info on all available endpoints", () => {
 		const endpoints_file = require("../endpoints.json");
-		console.log(endpoints_file)
 		return request(app)
 			.get("/api")
 			.expect(200)
