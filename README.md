@@ -54,16 +54,26 @@ Otherwise, thanks for reading :D
 
 3. Open your terminal in your code editor (double check the current directory is the root of the clone you made of this repo) and get get node package manager installed if not already by running this command in it
 ``` bash
-    - npm init -y
+npm init -y
 ```
 4. Now we need the packages I utilised. In the same terminal run through these commands to get everything installed on your local machine if it isn't already:
 ``` bash
-    - npm install dotenv
-    - npm install pg
-    - npm install express
-    - npm install -D jest
-    - npm install -D jest-sorted
-    - npm install -D supertest
+npm install dotenv
+```
+``` bash
+npm install pg
+```
+``` bash
+npm install express
+```
+``` bash
+npm install -D jest
+```
+``` bash
+npm install -D jest-sorted
+```
+``` bash
+npm install -D supertest
 ```
 ----------------------------
 ## ! Minimum Versions !
@@ -77,11 +87,11 @@ To successfully connect to the databases locally, you will need to create a .env
 
 -   For the .env.development file, please have it contain ONLY the following text:
 ``` js
-    -   PGDATABASE=nc_games
+PGDATABASE=nc_games
 ```
 -   For the .env.test file, please have it contain ONLY the following text:
 ``` js
-    -   PGDATABASE=nc_games_test
+PGDATABASE=nc_games_test
 ``` 
 It is very important that you are precise with this and that there are no typos.
 
@@ -97,21 +107,21 @@ To actually enable the code to run, you will then need to run through some scrip
 
 1. For the database to be created on your machine, you need to run this command in your code editor terminal
 ``` bash
-    - node run setup-dbs
+node run setup-dbs
 ``` 
 2. Seeding of said databases can now be done via
 ``` bash
-    - node run seed
+node run seed
 ``` 
 3. However, for the tests this is written in at the top of the test files where needed to be ran before each 
 
 4. Now I would suggest testing to see if everything is setup correctly, by running this in your terminal
 ``` bash
-    - npm test
+npm test
 ``` 
 All tests should pass.
 
 If you wish to run an individual test file, add the file path of the test file to the above command e.g.:
 ``` bash
-- npm test __tests__/app.allothers.test.js 
+npm test __tests__/app.allothers.test.js 
 ```
