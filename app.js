@@ -28,7 +28,7 @@ const {
 // Guide for all available paths
 const {endpoint_guide} = require('./endpoints.json')
 app.get("/api", (req,res,next) => {
-  res.status(200).send({endpoint_guide})
+  res.status(200).send(endpoint_guide)
 });
 
 // Available paths
