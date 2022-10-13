@@ -1,6 +1,7 @@
 const e = require("express");
 const express = require("express");
 const app = express();
+app.use(express.json());
 
 const {
   badPathErrorHandler,
@@ -21,7 +22,11 @@ const {
 
 const { getUsers } = require("./controllers/users_controllers");
 
-app.use(express.json());
+const {endpoint_instructions} = require('./endpoints.json')
+
+app.get("/api", (req,res,next) => {
+  res.status(200).send({endpoint_instructions})
+});
 
 app.get("/api/categories", getCategories);
 

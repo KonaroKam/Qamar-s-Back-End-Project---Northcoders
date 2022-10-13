@@ -11,6 +11,18 @@ const app = require("../app");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+describe("GET /api for instructions of api paths", () => {
+  test("Should respond with an object with title endpoint_instructions that includes info on all available endpoints", () => {
+    const { endpoints_file } = require("../endpoints.json");
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoint_instructions } }) => {
+        expect(endpoint_instructions).toEqual(endpoints_file);
+      });
+  });
+});
+
 describe("Error handling Bad Paths", () => {
   test('Should respond with status 404, "bad request" for bad paths ', () => {
     return request(app)
