@@ -53,18 +53,18 @@ Otherwise, thanks for reading :D
 2. Once you have done this, open the file in your preferred code editor
 
 3. Open your terminal in your code editor (double check the current directory is the root of the clone you made of this repo) and get get node package manager installed if not already by running this command in it
-
+``` bash
     - npm init -y
-
+```
 4. Now we need the packages I utilised. In the same terminal run through these commands to get everything installed on your local machine if it isn't already:
-
+``` bash
     - npm install dotenv
     - npm install pg
     - npm install express
     - npm install -D jest
     - npm install -D jest-sorted
     - npm install -D supertest
-
+```
 ----------------------------
 ## ! Minimum Versions !
 
@@ -76,12 +76,13 @@ Otherwise, thanks for reading :D
 To successfully connect to the databases locally, you will need to create a .env.test and a .env.development file with the relevant setup for each.
 
 -   For the .env.development file, please have it contain ONLY the following text:
-
+``` js
     -   PGDATABASE=nc_games
-
+```
 -   For the .env.test file, please have it contain ONLY the following text:
+``` js
     -   PGDATABASE=nc_games_test
-
+``` 
 It is very important that you are precise with this and that there are no typos.
 
 See .env-example for an example.
@@ -95,14 +96,19 @@ There is a .gitignore file already written that will ensure that the .env files 
 To actually enable the code to run, you will then need to run through some scripts:
 
 1. For the database to be created on your machine, you need to run this command in your code editor terminal
+``` bash
     - node run setup-dbs
+``` 
 2. Seeding of said databases can now be done via
+``` bash
     - node run seed
+``` 
 3. However, for the tests this is written in at the top of the test files where needed to be ran before each 
 
 4. Now I would suggest testing to see if everything is setup correctly, by running this in your terminal
+``` bash
     - npm test
-
+``` 
 All tests should pass.
 
 If you wish to run an individual test file, add the file path of the test file to the above command e.g.:
