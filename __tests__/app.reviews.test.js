@@ -213,7 +213,7 @@ describe("GET /api/reviews/:review_id NOW NEEDS TO INCLUDE COMMENT COUNT", () =>
   });
 });
 
-describe.only("GET /api/reviews NOW ACCEPTS SORT_BY AND ORDER QUERIES", () => {
+describe("GET /api/reviews NOW ACCEPTS SORT_BY AND ORDER QUERIES", () => {
   test("Should now be sorted by date and descending by default", () => {
     return request(app)
       .get("/api/reviews")
@@ -224,9 +224,9 @@ describe.only("GET /api/reviews NOW ACCEPTS SORT_BY AND ORDER QUERIES", () => {
         });
       });
   });
-  test("Should accept sort_by: ASC to sort by date ASC", () => {
+  test("Should accept order: ASC to sort by date ASC", () => {
     return request(app)
-      .get("/api/reviews?sort_by=ASC")
+      .get("/api/reviews?order=ASC")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSortedBy("created_at", {
@@ -234,9 +234,9 @@ describe.only("GET /api/reviews NOW ACCEPTS SORT_BY AND ORDER QUERIES", () => {
         });
       });
   });
-  test("Should accept order: review_id to sort by review_id DESC(default)", () => {
+  test("Should accept sort_by: review_id to sort by review_id DESC(default)", () => {
     return request(app)
-      .get("/api/reviews?order=review_id")
+      .get("/api/reviews?sort_by=review_id")
       .expect(200)
       .then(({ body: { reviews } }) => {
         expect(reviews).toBeSortedBy("review_id", {
@@ -246,12 +246,73 @@ describe.only("GET /api/reviews NOW ACCEPTS SORT_BY AND ORDER QUERIES", () => {
   });
   test("Should accept both order and sort_by at same time", () => {
     return request(app)
-      .get("/api/reviews?order=review_id&sort_by=ASC")
+      .get("/api/reviews?sort_by=review_id&order=ASC")
       .expect(200)
       .then(({ body: { reviews } }) => {
-        expect(reviews).toBeSortedBy("title", {
+        expect(reviews).toBeSortedBy("review_id", {
           descending: false,
         });
+      });
+  });
+  test("Works whilst there is a category query too", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=review_id&order=ASC&category=social+deduction")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeInstanceOf(Array);
+        expect(body.reviews.length).toBe(11);
+        expect(body.reviews).toBeSortedBy("review_id", {
+          descending: false,
+        });
+        body.reviews.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              review_body: expect.any(String),
+              designer: expect.any(String),
+              review_img_url: expect.any(String),
+              votes: expect.any(Number),
+              category: expect.any(String),
+              owner: expect.any(String),
+              created_at: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("should reject invalid query for sort_by", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=notValid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid queries. Reconsider query options.");
+      });
+  });
+  test("should reject invalid query for order", () => {
+    return request(app)
+      .get("/api/reviews?order=notValid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid queries. Reconsider query options.");
+      });
+  });
+  test("should reject invalid query names altogether and still return by default sort and order", () => {
+    return request(app)
+      .get("/api/reviews?notAtAllValid=review_id")
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("should reject attempts at SQL too", () => {
+    return request(app)
+      .get("/api/reviews?order=review_id;SELECT+*+FROM+reviews")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid queries. Reconsider query options.");
       });
   });
 });
@@ -448,9 +509,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
       })
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe(
-          "Bad post request. Reconsider provided body."
-        );
+        expect(body.msg).toBe("Bad post request. Reconsider provided body.");
       });
   });
   test("Invalid ID returns error 400", () => {

@@ -8,9 +8,9 @@ const {
 const {fetchCategoriesBySlug} = require('../models/categories_models')
 
 exports.getReviews = (req, res, next) => {
-  const {category} = req.query
+  const {category, sort_by, order} = req.query
     
-  const promises = [fetchReviews(category)]
+  const promises = [fetchReviews(category, sort_by, order)]
 
   if (category) {
     promises.push(fetchCategoriesBySlug(category))
