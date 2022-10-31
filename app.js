@@ -1,4 +1,7 @@
 // Dependencies
+const cors = require('cors');
+app.use(cors());
+
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -54,4 +57,5 @@ app.use(jsErrorHandler);
 app.use(psqlErrorHandler);
 app.use(defaultErrorHandler);
 
+// Exporting app to be used by other files
 module.exports = app;
