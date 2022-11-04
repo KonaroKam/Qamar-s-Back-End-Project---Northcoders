@@ -9,6 +9,7 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
 		"designer",
 		"review_img_url",
 		"votes",
+		"comment_count",
 		"category",
 		"owner",
 		"created_at",
