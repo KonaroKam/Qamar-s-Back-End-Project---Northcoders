@@ -6,9 +6,9 @@ To my back-end project that I wrote as part of my time at the Northcoders bootca
 
 In case you are eager to jump to taking a look at the final product, please find below a link at my suggested starting point: The endpoints guide.
 
-https://qamars-b-end-proj-gamereviews.herokuapp.com/api
+https://qamar-back-end-project-nc-games.cyclic.app/api
 
-As that link so explicitly shows, it is being hosted with heroku for now until the free postgres addon is no longer available as of 28th November 2022.
+This was hosted with Heroku originally but following the retirement of the free tiers that I needed at the end of November 2022, I migrated this back end to using ElephantSQL and Cyclic.
 
 ## Summary of project
 
